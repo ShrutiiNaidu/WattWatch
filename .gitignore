@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+frontend/dist/
+backend/data/processed/
+backend/data/household_power_consumption.txt
+backend/models/
+*.parquet
+*.pkl
+.env
