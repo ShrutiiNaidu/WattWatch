@@ -59,9 +59,13 @@ def init_db():
       risk_score REAL,
       risk_level TEXT,
       explanation TEXT,
+      severity TEXT,
       FOREIGN KEY(dataset_id) REFERENCES datasets(id)
     );
     CREATE INDEX IF NOT EXISTS idx_records_dataset_ts ON records(dataset_id, timestamp);
     CREATE INDEX IF NOT EXISTS idx_records_analysis ON alerts(analysis_id);
     ''')
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(records)")}
+    if "severity" not in columns:
+        conn.execute("ALTER TABLE records ADD COLUMN severity TEXT")
     conn.commit(); conn.close()

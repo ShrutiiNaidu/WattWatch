@@ -21,7 +21,7 @@ from pydantic import BaseModel
 from .db import get_conn, init_db
 from .ml import analyze
 from .preprocessing import validate_and_enrich, validate_frame
-from .reports import render_wattwatch_report
+from .reports import render_simple_report
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
@@ -563,7 +563,7 @@ def printable_report(
     ds   = dataset_row(a["dataset_id"])
 
     if simple:
-        return HTMLResponse(render_wattwatch_report(df, s, ds, meta, tariff=tariff))
+        return HTMLResponse(render_simple_report(df, s, ds, meta, tariff=tariff))
 
     # Legacy verbose report (kept for backward compat)
     rows_html = "".join(

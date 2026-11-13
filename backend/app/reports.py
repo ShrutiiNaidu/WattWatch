@@ -3,7 +3,13 @@ import html
 import pandas as pd
 
 
-def render_simple_report(df: pd.DataFrame, summary: dict, dataset: dict, metadata: dict) -> str:
+def render_simple_report(
+    df: pd.DataFrame,
+    summary: dict,
+    dataset: dict,
+    metadata: dict,
+    tariff: float = 8.0,
+) -> str:
     attention = (
         'Needs attention' if summary['high_risk']
         else 'Worth checking' if summary['anomalies']
@@ -70,6 +76,7 @@ def render_simple_report(df: pd.DataFrame, summary: dict, dataset: dict, metadat
         f"{dataset.get('valid_records', summary['records']):,} usable readings out of "
         f"{dataset.get('records', summary['records']):,} total."
     )
+    estimated_cost = summary['estimated_excess_kwh'] * tariff
     if dataset.get('invalid_records', 0):
         quality_text += f" {dataset['invalid_records']:,} readings need a review."
 
@@ -79,7 +86,7 @@ def render_simple_report(df: pd.DataFrame, summary: dict, dataset: dict, metadat
 <style>
 body{{font-family:Arial,sans-serif;color:#17201b;background:#f7f5ef;max-width:900px;margin:40px auto;padding:24px;line-height:1.55}}
 h1,h2{{letter-spacing:-.02em}}.muted{{color:#61706a}}.badge{{background:#f3dfbf;color:#8d5b24;padding:5px 8px;border-radius:5px;font-size:12px;font-weight:bold}}
-.grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}}.item{{border:1px solid #d9ddd7;background:white;padding:16px;border-radius:12px}}
+.grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}}.item{{border:1px solid #d9ddd7;background:white;padding:16px;border-radius:12px}}
 .item strong{{display:block;font-size:24px;margin-top:4px}}.chart{{background:white;border:1px solid #d9ddd7;padding:20px;border-radius:12px}}
 svg{{width:100%;height:auto}}.legend{{display:flex;gap:24px;font-size:13px;color:#61706a}}.legend span:before{{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:#54715c}}
 .legend span:last-child:before{{background:#c87941}}table{{width:100%;border-collapse:collapse;background:white}}th,td{{padding:10px;border-bottom:1px solid #e2e5e0;text-align:left;font-size:13px}}
@@ -92,8 +99,10 @@ button{{background:#17201b;color:white;border:0;padding:11px 15px;border-radius:
 <h2>{attention}</h2><p>{result_text}</p>
 <div class="grid"><div class="item">Electricity used<strong>{summary['total_energy_kwh']:,.2f} units</strong></div>
 <div class="item">Readings checked<strong>{summary['records']:,}</strong></div>
-<div class="item">Unusual readings<strong>{summary['anomalies']:,}</strong></div></div>
+<div class="item">Unusual readings<strong>{summary['anomalies']:,}</strong></div>
+<div class="item">Estimated cost above usual<strong>₹{estimated_cost:,.2f}</strong></div></div>
 <p class="muted">1 unit of electricity = 1 kWh. Readings that look unusual are a clue to check, not proof of a fault or a specific cause.</p>
+<p class="muted">Cost estimate uses the selected tariff of ₹{tariff:,.2f} per kWh and estimated excess above usual consumption.</p>
 <h2>File check</h2><p>{quality_text}</p>
 <h2>Electricity use over time</h2><div class="chart">{chart}<div class="legend"><span>Usual use</span><span>Actual use</span></div></div>
 <h2>Readings worth checking</h2><table><thead><tr><th>Date and time</th><th>Meter</th><th>Electricity used</th><th>Usual amount</th><th>What stood out</th></tr></thead>

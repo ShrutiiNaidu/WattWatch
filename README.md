@@ -41,6 +41,19 @@ npm run build
 ## Replit
 Use a workflow that starts FastAPI on port 8000 and Vite on port 5173, or run the two commands in separate shells. The included `start.sh` installs dependencies and builds the frontend before starting FastAPI.
 
+## Render
+Set the service Root Directory to the repository root. `.python-version` selects Python 3.13.4, which is compatible with the pinned backend dependencies. If `PYTHON_VERSION` is set in Render's environment variables, set it to `3.13.4` or remove it because it takes precedence over `.python-version`.
+
+Build Command:
+```bash
+pip install -r backend/requirements.txt && npm --prefix frontend ci && npm --prefix frontend run build
+```
+
+Start Command:
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+```
+
 ## Sample data
 `backend/data/sample_electricity.csv` contains 4 synthetic meters over 60 days. It includes daily/weekly variation, injected unusual events, one missing reading and one duplicate-like invalid row for validation testing. It is synthetic and must not be presented as real utility data.
 
